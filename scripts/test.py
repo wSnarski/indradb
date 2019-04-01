@@ -39,7 +39,7 @@ def main():
     if os.environ["TRAVIS_OS_NAME"] == "linux" and os.environ["TRAVIS_RUST_VERSION"] == "stable":
         shutil.rmtree("target/kcov", ignore_errors=True)
 
-        run(["cargo", "test", "--features=test-suite,rocksdb-datastore", "--no-run"], cwd="lib")
+        run(["cargo", "test", "--features=test-suite", "--no-run"], cwd="lib")
         run(["cargo", "test", "--features=test-suite", "--no-run"], cwd="bin", env=test_bin_env)
 
         for lib_test in LIB_TESTS:
@@ -65,7 +65,7 @@ def main():
             "target/kcov", "target/kcov",
         ])
     else:
-        run(["cargo", "test", "--features=test-suite,rocksdb-datastore"], cwd="lib")
+        run(["cargo", "test", "--features=test-suite"], cwd="lib")
         run(["cargo", "test", "--features=test-suite"], cwd="bin", env=test_bin_env)
 
 if __name__ == "__main__":

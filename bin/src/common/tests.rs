@@ -20,23 +20,6 @@ full_test_impl!({
 });
 
 #[test]
-fn should_create_rocksdb_datastore() {
-    let port = (*CURRENT_PORT).fetch_add(1, Ordering::SeqCst);
-
-    spawn(move || {
-        let connection_string = format!("rocksdb://{}", generate_temporary_path());
-        server::start(&format!("127.0.0.1:{}", port), &connection_string, 1)
-    });
-
-    // Just make sure we can run a command
-    let datastore = ClientDatastore::new(port as u16);
-    let trans = datastore.transaction().unwrap();
-    let count = trans.get_vertex_count().unwrap();
-
-    assert_eq!(count, 0);
-}
-
-#[test]
 fn should_panic_on_bad_connection_string() {
     let result = catch_unwind(|| server::start("127.0.0.1:9999", "foo://", 1));
     assert!(result.is_err());

@@ -24,11 +24,6 @@ extern crate regex;
 extern crate serde_json;
 extern crate uuid;
 
-#[cfg(feature = "rocksdb-datastore")]
-extern crate rocksdb;
-#[cfg(feature = "rocksdb-datastore")]
-extern crate byteorder;
-
 #[cfg(feature = "test-suite")]
 #[macro_use]
 pub mod tests;
@@ -47,8 +42,3 @@ pub use crate::errors::*;
 pub use crate::memory::{MemoryDatastore, MemoryTransaction};
 pub use crate::models::*;
 pub use crate::traits::*;
-
-#[cfg(feature = "rocksdb-datastore")]
-mod rdb;
-#[cfg(feature = "rocksdb-datastore")]
-pub use crate::rdb::{RocksdbDatastore, RocksdbTransaction};

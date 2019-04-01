@@ -10,7 +10,7 @@ use futures::{Future, Stream};
 use futures_cpupool::CpuPool;
 use indradb;
 use indradb::{
-    Datastore as IndraDbDatastore, Edge, EdgeProperty, MemoryDatastore, RocksdbDatastore,
+    Datastore as IndraDbDatastore, Edge, EdgeProperty, MemoryDatastore,
     Transaction as IndraDbTransaction, Type, Vertex, VertexProperty,
 };
 use serde_json;
@@ -486,22 +486,7 @@ pub fn start(binding: &str, connection_string: &str, worker_count: usize) -> Res
         .next()
         .ok_or_else(|| -> errors::Error { errors::Error::CouldNotParse })?;
 
-    if connection_string.starts_with("rocksdb://") {
-        let path = &connection_string[10..connection_string.len()];
-
-        let max_open_files_str = env::var("ROCKSDB_MAX_OPEN_FILES").unwrap_or_else(|_| "512".to_string());
-        let max_open_files = max_open_files_str.parse::<i32>().expect(
-            "Could not parse environment variable `ROCKSDB_MAX_OPEN_FILES`: must be an \
-             i32",
-        );
-
-        let bulk_load_optimized = env::var("ROCKSDB_BULK_LOAD_OPTIMIZED").unwrap_or_else(|_| "".to_string()) == "true";
-
-        let datastore = RocksdbDatastore::new(path, Some(max_open_files), bulk_load_optimized)
-            .expect("Expected to be able to create the RocksDB datastore");
-
-        run(addr, datastore, worker_count)
-    } else if connection_string == "memory://" {
+    if connection_string == "memory://" {
         let datastore = MemoryDatastore::default();
         run(addr, datastore, worker_count)
     } else {

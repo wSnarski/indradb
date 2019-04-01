@@ -1,5 +1,3 @@
-#[cfg(feature = "rocksdb-datastore")]
-use rocksdb::Error as RocksDbError;
 use serde_json::Error as JsonError;
 use std::result::Result as StdResult;
 
@@ -7,9 +5,6 @@ use std::result::Result as StdResult;
 pub enum Error {
     #[fail(display = "json error: {}", inner)]
     Json { inner: JsonError },
-    #[cfg(feature = "rocksdb-datastore")]
-    #[fail(display = "rocksdb error: {}", inner)]
-    Rocksdb { inner: RocksDbError },
     #[fail(display = "UUID already taken")]
     UuidTaken,
 }
@@ -17,12 +12,6 @@ pub enum Error {
 impl From<JsonError> for Error {
     fn from(err: JsonError) -> Self {
         Error::Json { inner: err }
-    }
-}
-
-impl From<RocksDbError> for Error {
-    fn from(err: RocksDbError) -> Self {
-        Error::Rocksdb { inner: err }
     }
 }
 
