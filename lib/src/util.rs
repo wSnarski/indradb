@@ -3,7 +3,8 @@
 use chrono::offset::Utc;
 use chrono::DateTime;
 use crate::errors::{ValidationError, ValidationResult};
-use rand::{OsRng, Rng};
+use rand::rngs::OsRng;
+use rand::seq::SliceRandom;
 use std::env;
 use uuid::v1::Context;
 use uuid::Uuid;
@@ -48,7 +49,7 @@ pub fn generate_random_secret(count: usize) -> String {
     let mut rng = OsRng::new().unwrap();
 
     for _ in 0..count {
-        let c: u8 = *rng.choose(options).unwrap();
+        let c: u8 = *options.choose(&mut rng).unwrap();
         chars.push(c);
     }
 
