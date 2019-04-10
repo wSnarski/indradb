@@ -6,10 +6,15 @@ use crate::errors::{ValidationError, ValidationResult};
 use rand::rngs::OsRng;
 use rand::seq::SliceRandom;
 use std::env;
+use uuid::v1::Context;
 use uuid::Uuid;
 
 const TEMP_PATH_RANDOM_PART_LENGTH: usize = 8;
+const NODE_ID: [u8; 6] = [0, 0, 0, 0, 0, 0];
 
+lazy_static! {
+    static ref CONTEXT: Context = Context::new(0);
+}
 
 /// Gets the path to a file or directory within the temporary directory, in a
 /// platform-independent manner. Note that this will panic if the path cannot
@@ -25,7 +30,15 @@ pub fn generate_temporary_path() -> String {
 /// Generates a UUID v1. this utility method uses a shared context and node ID
 /// to help ensure generated UUIDs are unique.
 pub fn generate_uuid_v1() -> Uuid {
-    Uuid::new_v4()
+    let now = Utc::now();
+
+    Uuid::new_v1(
+        &*CONTEXT,
+        now.timestamp() as u64,
+        now.timestamp_subsec_nanos(),
+        &NODE_ID,
+    )
+    .expect("Expected to be able to generate a UUID")
 }
 
 /// Generates a securely random string consisting of letters (uppercase and
